@@ -54,6 +54,7 @@ if starts_on_page > 1:
 
 for i in range(starts_on_page - 1, total_pages):
     driver.implicitly_wait(30)
+    informacoes_gerais = None
 
     for a in driver.find_elements(By.CLASS_NAME,"listagem"):
         if  'Certificador:' in a.text:
@@ -101,7 +102,7 @@ for i in range(starts_on_page - 1, total_pages):
             else:
                 papel_da_empresa = a.text
         elif basic_info == 6:
-            if  a.text[:11].isdigit():
+            if  a.text[:11].isdigit() or a.text.replace('&nbsp;', ' ') == ' ':
                 cnpj = cnpj + ' / ' + a.text
                 basic_info = 1
             else:
@@ -129,7 +130,10 @@ for i in range(starts_on_page - 1, total_pages):
         try:
             driver.execute_script("Pagina("+ str(i + 2) + ", 1, 10)")
         except:
-            worksheet.write(row + 1, 0, 'Foi ate a pagina: ' + str(i + 1))
+            if informacoes_gerais:
+                worksheet.write(row + 1, 0, 'NAO completou a pagina: ' + str(i + 1))
+            else:
+                worksheet.write(row + 1, 0, 'Completou a pagina: ' + str(i))
             break
 
 
